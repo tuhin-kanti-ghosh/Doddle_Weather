@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <!-- Primary SEO -->
+  <title>Doodle Weather — Live Forecast & 7-Day Outlook</title>
+  <meta name="description" content="Doodle Weather: free, fast, beautiful weather app with live conditions, 7-day forecast, hourly outlook, UV index, sunrise & sunset. Powered by Open-Meteo, no API key needed." />
+  <meta name="keywords" content="weather, forecast, doodle weather, current weather, 7 day forecast, hourly weather, UV index, sunrise, sunset, open-meteo, free weather app" />
+  <meta name="author" content="Tuhin Kanti Ghosh" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+  <meta name="theme-color" content="#0ea5e9" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)" />
+  <meta name="application-name" content="Doodle Weather" />
+  <meta name="apple-mobile-web-app-title" content="Doodle Weather" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="canonical" href="https://doodle-weather.app/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Doodle Weather" />
+  <meta property="og:title" content="Doodle Weather — Live Forecast & 7-Day Outlook" />
+  <meta property="og:description" content="A hand-drawn, doodle-aesthetic weather app with live conditions, hourly and 7-day forecasts. Built with love by Tuhin Kanti Ghosh." />
+  <meta property="og:url" content="https://doodle-weather.app/" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:image" content="https://doodle-weather.app/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Doodle Weather app preview" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Doodle Weather — Live Forecast & 7-Day Outlook" />
+  <meta name="twitter:description" content="Hand-drawn weather app with live conditions, 7-day and hourly forecasts. Free, fast, no API key required." />
+  <meta name="twitter:image" content="https://doodle-weather.app/og-image.png" />
+  <meta name="twitter:image:alt" content="Doodle Weather app preview" />
+
+  <!-- Icons (inline SVG favicon) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='30' cy='30' r='14' fill='%23fbbf24'/><g fill='none' stroke='%23fbbf24' stroke-width='3' stroke-linecap='round'><path d='M30 6v8M30 46v8M6 30h8M46 30h8M12 12l6 6M46 46l6 6M12 48l6-6M46 18l6-6'/></g><path d='M22 44a10 10 0 0 1 0-20 12 12 0 0 1 23 4 8 8 0 0 1-2 16H22z' fill='%23fff'/></svg>" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='30' cy='30' r='14' fill='%23fbbf24'/><g fill='none' stroke='%23fbbf24' stroke-width='3' stroke-linecap='round'><path d='M30 6v8M30 46v8M6 30h8M46 30h8M12 12l6 6M46 46l6 6M12 48l6-6M46 18l6-6'/></g><path d='M22 44a10 10 0 0 1 0-20 12 12 0 0 1 23 4 8 8 0 0 1-2 16H22z' fill='%23fff'/></svg>" />
+
+  <!-- Preconnect to Open-Meteo for performance -->
+  <link rel="preconnect" href="https://api.open-meteo.com" crossorigin />
+  <link rel="preconnect" href="https://geocoding-api.open-meteo.com" crossorigin />
+  <link rel="dns-prefetch" href="https://api.open-meteo.com" />
+  <link rel="dns-prefetch" href="https://geocoding-api.open-meteo.com" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: ['class', '[data-theme="dark"]'],
+      theme: {
+        extend: {
+          fontFamily: {
+            hand: ['"Caveat"', '"Patrick Hand"', 'cursive'],
+            sans: ['"Inter"', '"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            display: ['"Fraunces"', '"Plus Jakarta Sans"', 'serif']
+          },
+          colors: {
+            sky: { 50: '#f0f9ff', 100: '#e0f2fe', 200: '#bae6fd', 300: '#7dd3fc', 400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7' },
+            ink: { 900: '#0b1220', 800: '#111827', 700: '#1f2937' }
+          },
+          boxShadow: {
+            doodle: '0 10px 30px -10px rgba(2, 132, 199, 0.25), 0 4px 10px -4px rgba(2, 132, 199, 0.15)',
+            soft: '0 8px 24px -8px rgba(15, 23, 42, 0.12)'
+          },
+          animation: {
+            'float-slow': 'float 9s ease-in-out infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'spin-slow': 'spin 28s linear infinite',
+            'ray': 'ray 4s ease-in-out infinite',
+            'drift': 'drift 60s linear infinite',
+            'pulse-soft': 'pulseSoft 2.6s ease-in-out infinite',
+            'rain': 'rain 1.1s linear infinite',
+            'snow': 'snow 6s linear infinite',
+            'wiggle': 'wiggle 3s ease-in-out infinite',
+            'pop': 'pop .35s ease-out'
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Structured Data: WebSite -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Doodle Weather",
+    "url": "https://doodle-weather.app/",
+    "description": "A hand-drawn, doodle-aesthetic weather app with live conditions, hourly and 7-day forecasts.",
+    "inLanguage": "en",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://geocoding-api.open-meteo.com/v1/search?name={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
+  <!-- Structured Data: WebApplication -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Doodle Weather",
+    "url": "https://doodle-weather.app/",
+    "applicationCategory": "WeatherApplication",
+    "operatingSystem": "Any",
+    "browserRequirements": "Requires modern browser with JavaScript and geolocation support",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Person", "name": "Tuhin Kanti Ghosh" }
+  }
+  </script>
+
+  <!-- Structured Data: Organization -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Doodle Weather",
+    "url": "https://doodle-weather.app/",
+    "logo": "https://doodle-weather.app/logo.png",
+    "sameAs": [
+      "https://www.linkedin.com/in/tuhin-kanti-ghosh-1062b8394"
+    ],
+    "founder": { "@type": "Person", "name": "Tuhin Kanti Ghosh" }
+  }
+  </script>
+
+  <style>
+    /* ---------- Base & Theme ---------- */
+    :root {
+      --bg-grad-1: #fde68a;
+      --bg-grad-2: #bae6fd;
+      --bg-grad-3: #fbcfe8;
+      --ink: #0f172a;
+      --muted: #475569;
+      --card: rgba(255, 255, 255, 0.65);
+      --card-border: rgba(255, 255, 255, 0.85);
+      --shadow: 0 10px 30px -10px rgba(2, 132, 199, 0.25);
+      --doodle: #0f172a;
+    }
+    [data-theme="dark"] {
+      --bg-grad-1: #0b1220;
+      --bg-grad-2: #0f172a;
+      --bg-grad-3: #1e1b4b;
+      --ink: #e2e8f0;
+      --muted: #94a3b8;
+      --card: rgba(15, 23, 42, 0.55);
+      --card-border: rgba(148, 163, 184, 0.18);
+      --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+      --doodle: #e2e8f0;
+    }
+    html, body { height: 100%; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 800px at 10% -10%, var(--bg-grad-2), transparent 60%),
+        radial-gradient(900px 600px at 110% 10%, var(--bg-grad-1), transparent 55%),
+        radial-gradient(800px 600px at 50% 120%, var(--bg-grad-3), transparent 55%),
+        linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      background-attachment: fixed;
+      min-height: 100%;
+      transition: background 600ms ease, color 300ms ease;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    [data-theme="dark"] body {
+      background:
+        radial-gradient(1200px 800px at 10% -10%, #1e293b, transparent 60%),
+        radial-gradient(900px 600px at 110% 10%, #0c4a6e, transparent 55%),
+        radial-gradient(800px 600px at 50% 120%, #312e81, transparent 55%),
+        linear-gradient(180deg, #0b1220 0%, #0f172a 100%);
+    }
+
+    /* Hand-drawn doodle look — slightly wobbly outline */
+    .doodle {
+      filter: drop-shadow(0 2px 0 rgba(15, 23, 42, 0.08));
+    }
+    [data-theme="dark"] .doodle {
+      filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.5));
+    }
+
+    /* Decorative doodle SVGs inherit theme ink */
+    .doodle-deco { color: var(--doodle); }
+
+    /* Loading skeleton */
+    .skeleton {
+      background: linear-gradient(90deg, rgba(148,163,184,.15) 0%, rgba(148,163,184,.35) 50%, rgba(148,163,184,.15) 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s linear infinite;
+      border-radius: 8px;
+      color: transparent !important;
+    }
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Doodle spinner */
+    .spin-doodle {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 3px solid rgba(14,165,233,.25);
+      border-top-color: #0ea5e9;
+      animation: spin .9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Suggestion list focus state */
+    #suggestions li:focus { background: rgba(56,189,248,.18); outline: none; }
+    [data-theme="dark"] #suggestions li:focus { background: rgba(56,189,248,.25); }
+
+    /* Skeleton placeholder for hourly tiles */
+    .skel-tile {
+      min-width: 88px;
+      height: 110px;
+      border-radius: 1rem;
+      background: linear-gradient(90deg, rgba(148,163,184,.12) 0%, rgba(148,163,184,.28) 50%, rgba(148,163,184,.12) 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s linear infinite;
+    }
+
+    /* Glass card */
+    .glass {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(14px) saturate(140%);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
+      box-shadow: var(--shadow);
+      border-radius: 1.5rem;
+    }
+    .glass-soft {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(10px) saturate(130%);
+      -webkit-backdrop-filter: blur(10px) saturate(130%);
+      border-radius: 1.25rem;
+    }
+
+    /* Wobbly hand-drawn border for important cards */
+    .doodle-border {
+      position: relative;
+    }
+    .doodle-border::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: inherit;
+      padding: 2px;
+      background: linear-gradient(135deg, #38bdf8, #f472b6 50%, #fbbf24);
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    /* Hide scrollbar in chips row */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { scrollbar-width: none; }
+
+    /* ---------- Keyframes ---------- */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    @keyframes ray {
+      0%, 100% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.06); opacity: 1; }
+    }
+    @keyframes drift {
+      from { transform: translateX(-10%); }
+      to { transform: translateX(110%); }
+    }
+    @keyframes pulseSoft {
+      0%, 100% { opacity: .9; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.04); }
+    }
+    @keyframes rain {
+      0% { transform: translateY(-20%); opacity: 0; }
+      20% { opacity: 1; }
+      100% { transform: translateY(220%); opacity: 0; }
+    }
+    @keyframes snow {
+      0% { transform: translate(0, -10%); opacity: 0; }
+      15% { opacity: 1; }
+      100% { transform: translate(20px, 220%); opacity: 0; }
+    }
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-2deg); }
+      50% { transform: rotate(2deg); }
+    }
+    @keyframes pop {
+      0% { transform: scale(.92); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Particle containers */
+    .rain-container, .snow-container {
+      position: absolute; inset: 0; overflow: hidden; pointer-events: none; border-radius: inherit;
+    }
+    .drop {
+      position: absolute; top: -10%; width: 2px; height: 14px;
+      background: linear-gradient(180deg, rgba(56,189,248,0), rgba(56,189,248,.9));
+      border-radius: 999px;
+      animation: rain 1.1s linear infinite;
+    }
+    .flake {
+      position: absolute; top: -8%; color: #e0f2fe;
+      font-size: 14px; line-height: 1;
+      animation: snow 6s linear infinite;
+      text-shadow: 0 0 6px rgba(255,255,255,.6);
+    }
+
+    /* Hover card lift */
+    .lift { transition: transform .35s ease, box-shadow .35s ease; }
+    .lift:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -16px rgba(2, 132, 199, .35); }
+
+    /* Chip style */
+    .chip {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .4rem .7rem; border-radius: 9999px;
+      background: rgba(255,255,255,.7);
+      border: 1px solid rgba(15,23,42,.08);
+      font-size: .8rem; font-weight: 500;
+      color: var(--ink);
+    }
+    [data-theme="dark"] .chip {
+      background: rgba(30,41,59,.6);
+      border-color: rgba(148,163,184,.2);
+    }
+
+    /* Focus ring */
+    :focus-visible {
+      outline: 3px solid #38bdf8;
+      outline-offset: 2px;
+      border-radius: 12px;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+    }
+
+    /* Print friendliness */
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; }
+    }
+
+    /* Skip link */
+    .skip-link {
+      position: absolute; top: -40px; left: 8px;
+      background: #0ea5e9; color: white; padding: 8px 12px;
+      border-radius: 8px; z-index: 100; transition: top .2s;
+    }
+    .skip-link:focus { top: 8px; }
+  </style>
+</head>
+<body class="overflow-x-hidden">
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <!-- Decorative doodle background -->
+  <div aria-hidden="true" class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+    <!-- Drifting clouds -->
+    <svg class="absolute top-10 left-[-10%] w-72 opacity-60 animate-drift doodle-deco" viewBox="0 0 200 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M30 70c-12 0-22-9-22-20s10-20 22-20c2-12 14-22 28-22 16 0 28 12 28 26 10 1 18 9 18 19 0 11-9 19-20 19H30z" fill="white" fill-opacity=".7"/>
+    </svg>
+    <svg class="absolute top-40 left-[-20%] w-80 opacity-50 animate-drift doodle-deco" style="animation-delay:-20s; animation-duration:80s;" viewBox="0 0 200 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round">
+      <path d="M30 70c-12 0-22-9-22-20s10-20 22-20c2-12 14-22 28-22 16 0 28 12 28 26 10 1 18 9 18 19 0 11-9 19-20 19H30z" fill="white" fill-opacity=".6"/>
+    </svg>
+    <svg class="absolute top-72 left-[-15%] w-64 opacity-50 animate-drift doodle-deco" style="animation-delay:-40s; animation-duration:90s;" viewBox="0 0 200 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round">
+      <path d="M30 70c-12 0-22-9-22-20s10-20 22-20c2-12 14-22 28-22 16 0 28 12 28 26 10 1 18 9 18 19 0 11-9 19-20 19H30z" fill="white" fill-opacity=".5"/>
+    </svg>
+  </div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 no-print">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4">
+      <div class="glass doodle-border flex items-center gap-3 px-4 sm:px-5 py-3">
+        <!-- Logo -->
+        <a href="#main" class="flex items-center gap-2 group" aria-label="Doodle Weather home">
+          <span class="relative inline-flex w-10 h-10">
+            <svg viewBox="0 0 64 64" class="doodle w-10 h-10" aria-hidden="true">
+              <circle cx="28" cy="28" r="11" fill="#fbbf24" stroke="#0f172a" stroke-width="2.2"/>
+              <g stroke="#0f172a" stroke-width="2.2" stroke-linecap="round" fill="none">
+                <path d="M28 8v6M28 42v6M8 28h6M42 28h6M14 14l4 4M38 38l4 4M14 42l4-4M38 18l4-4"/>
+              </g>
+              <path d="M20 46c-7 0-12-5-12-11s5-11 12-11c1-7 8-12 16-12 9 0 16 7 16 15 6 0 10 5 10 10 0 6-5 10-11 10H20z" fill="#fff" stroke="#0f172a" stroke-width="2.2" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="font-display text-lg sm:text-2xl font-extrabold tracking-tight hidden sm:inline">Doodle Weather</span>
+        </a>
+
+        <!-- Search -->
+        <form id="searchForm" class="flex-1 min-w-[140px]" role="search" aria-label="Search city">
+          <label for="cityInput" class="sr-only">Search city</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sky-500" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            </span>
+            <input
+              id="cityInput"
+              type="search"
+              autocomplete="off"
+              placeholder="Search city — e.g. Kolkata, Tokyo, Paris"
+              class="w-full pl-10 pr-10 py-2.5 rounded-2xl bg-white/70 dark:bg-slate-800/60 border border-white/80 dark:border-slate-700 focus:border-sky-400 outline-none text-sm sm:text-base placeholder:text-slate-400"
+              aria-describedby="searchHelp"
+            />
+            <span id="searchHelp" class="sr-only">Press Enter to search for a city's weather.</span>
+            <button type="button" id="clearInput" class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full hover:bg-slate-200/60 dark:hover:bg-slate-700/60 hidden" aria-label="Clear search">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            </button>
+            <!-- Suggestions -->
+            <ul id="suggestions" role="listbox" class="absolute z-30 left-0 right-0 mt-2 glass max-h-72 overflow-auto hidden" aria-label="City suggestions"></ul>
+          </div>
+        </form>
+
+        <!-- Locate me (compact on mobile, full label on >=sm) -->
+        <button id="locateBtn" type="button" class="inline-flex items-center gap-2 px-2.5 sm:px-3 py-2 rounded-2xl bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold shadow-soft transition shrink-0" aria-label="Use my location">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+          <span class="hidden sm:inline">Locate me</span>
+        </button>
+
+        <!-- Theme toggle -->
+        <button id="themeToggle" type="button" class="relative w-10 h-10 rounded-2xl bg-white/70 dark:bg-slate-800/70 border border-white/80 dark:border-slate-700 flex items-center justify-center" aria-label="Toggle dark mode" aria-pressed="false">
+          <svg class="w-5 h-5 dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          <svg class="w-5 h-5 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
+    <!-- Hero / Current Weather -->
+    <section aria-labelledby="currentHeading" class="mt-4">
+      <h1 id="currentHeading" class="sr-only">Current Weather</h1>
+
+      <!-- Location chip + status -->
+      <div class="flex flex-wrap items-center gap-2 mb-4">
+        <span class="chip" id="locationChip">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-7.5 7-13a7 7 0 1 0-14 0c0 5.5 7 13 7 13z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          <span id="locationText">Locating…</span>
+        </span>
+        <span class="chip" id="updatedChip">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <span id="updatedText">—</span>
+        </span>
+        <span class="chip hidden" id="errorChip" role="alert">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+          <span id="errorText">Something went wrong.</span>
+        </span>
+      </div>
+
+      <!-- Search history -->
+      <div id="historyRow" class="flex gap-2 overflow-x-auto no-scrollbar pb-2 mb-3 hidden" aria-label="Recent searches">
+        <!-- history chips injected here -->
+      </div>
+
+      <!-- Current card -->
+      <article class="glass doodle-border lift relative overflow-hidden p-6 sm:p-8" id="currentCard" aria-live="polite" aria-busy="false">
+        <!-- Loading overlay -->
+        <div id="loadingOverlay" class="absolute inset-0 z-20 hidden items-center justify-center bg-white/55 dark:bg-slate-900/55 backdrop-blur-sm">
+          <div class="flex flex-col items-center gap-2">
+            <div class="spin-doodle" aria-hidden="true"></div>
+            <div class="text-sm font-semibold text-slate-700 dark:text-slate-200" id="loadingText">Loading weather…</div>
+          </div>
+        </div>
+          </div>
+        </div>
+        <!-- Animated backdrop scene -->
+        <div id="scene" class="absolute inset-0 -z-0" aria-hidden="true">
+          <div id="rainLayer" class="rain-container hidden"></div>
+          <div id="snowLayer" class="snow-container hidden"></div>
+          <div id="sunLayer" class="absolute -top-6 -right-6 hidden">
+            <svg viewBox="0 0 200 200" class="w-48 h-48 animate-spin-slow" style="transform-origin: 100px 100px;">
+              <g stroke="#fbbf24" stroke-width="4" stroke-linecap="round">
+                <line x1="100" y1="10" x2="100" y2="35"/>
+                <line x1="100" y1="165" x2="100" y2="190"/>
+                <line x1="10" y1="100" x2="35" y2="100"/>
+                <line x1="165" y1="100" x2="190" y2="100"/>
+                <line x1="35" y1="35" x2="55" y2="55"/>
+                <line x1="145" y1="145" x2="165" y2="165"/>
+                <line x1="35" y1="165" x2="55" y2="145"/>
+                <line x1="145" y1="55" x2="165" y2="35"/>
+              </g>
+            </svg>
+            <div class="absolute inset-0 m-auto w-24 h-24 rounded-full bg-gradient-to-br from-yellow-300 to-amber-500 animate-ray" style="box-shadow: 0 0 60px 10px rgba(251,191,36,.45);"></div>
+          </div>
+          <div id="cloudLayer" class="absolute inset-0"></div>
+        </div>
+
+        <div class="relative z-10 grid md:grid-cols-2 gap-6 items-center">
+          <div>
+            <p class="font-hand text-2xl sm:text-3xl text-sky-600 dark:text-sky-300" id="greeting">Hello there!</p>
+            <h2 class="font-display text-4xl sm:text-6xl font-black tracking-tight leading-none mt-1" id="cityName">—</h2>
+            <p class="text-slate-500 dark:text-slate-400 mt-1" id="localTime">—</p>
+
+            <div class="flex items-end gap-3 mt-5">
+              <div class="font-display text-7xl sm:text-8xl font-black tracking-tighter" id="tempValue">--°</div>
+              <div class="pb-3">
+                <div class="text-lg font-semibold" id="conditionText">—</div>
+                <div class="text-sm text-slate-500 dark:text-slate-400" id="feelsLike">Feels like --°</div>
+              </div>
+              <div id="weatherIcon" class="ml-auto w-24 h-24 sm:w-32 sm:h-32 animate-float" aria-hidden="true">
+                <!-- big weather icon injected here -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Metric grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="metricsGrid">
+            <!-- metric cards injected here -->
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- Hourly forecast -->
+    <section aria-labelledby="hourlyHeading" class="mt-8">
+      <div class="flex items-center justify-between mb-3">
+        <h2 id="hourlyHeading" class="font-display text-2xl sm:text-3xl font-extrabold tracking-tight">Hourly forecast</h2>
+        <span class="chip" id="hourlyRange">Next 24 hours</span>
+      </div>
+      <div class="glass p-4 sm:p-5 overflow-x-auto no-scrollbar">
+        <ul id="hourlyList" class="flex gap-3 min-w-max" aria-label="Hourly weather forecast"></ul>
+      </div>
+    </section>
+
+    <!-- 7-day forecast -->
+    <section aria-labelledby="dailyHeading" class="mt-8">
+      <div class="flex items-center justify-between mb-3">
+        <h2 id="dailyHeading" class="font-display text-2xl sm:text-3xl font-extrabold tracking-tight">7-day forecast</h2>
+        <span class="chip" id="dailyRange">—</span>
+      </div>
+      <div class="glass p-3 sm:p-4">
+        <ul id="dailyList" class="divide-y divide-slate-200/60 dark:divide-slate-700/60" aria-label="7-day weather forecast"></ul>
+      </div>
+    </section>
+
+    <!-- Sun & UV -->
+    <section aria-labelledby="sunHeading" class="mt-8 grid md:grid-cols-2 gap-6">
+      <article class="glass p-6 lift">
+        <h2 id="sunHeading" class="font-display text-2xl font-extrabold mb-4">Sun &amp; moon</h2>
+        <div class="flex items-center gap-6">
+          <div class="relative w-32 h-32">
+            <svg viewBox="0 0 100 100" class="w-32 h-32" aria-hidden="true">
+              <defs>
+                <linearGradient id="arc" x1="0" x2="1" y1="0" y2="0">
+                  <stop offset="0%" stop-color="#fbbf24"/>
+                  <stop offset="100%" stop-color="#f472b6"/>
+                </linearGradient>
+              </defs>
+              <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(148,163,184,.3)" stroke-width="6"/>
+              <path id="sunArc" d="M 6 50 A 44 44 0 0 1 94 50" fill="none" stroke="url(#arc)" stroke-width="6" stroke-linecap="round"/>
+              <circle id="sunDot" cx="6" cy="50" r="6" fill="#fbbf24" stroke="#0f172a" stroke-width="2"/>
+            </svg>
+            <span class="absolute -top-1 left-0 text-xs font-semibold" id="sunriseLabel">—</span>
+            <span class="absolute -top-1 right-0 text-xs font-semibold" id="sunsetLabel">—</span>
+          </div>
+          <div class="space-y-2 text-sm">
+            <div class="flex items-center gap-2"><span class="chip">🌅</span><span id="sunriseText">Sunrise —</span></div>
+            <div class="flex items-center gap-2"><span class="chip">🌇</span><span id="sunsetText">Sunset —</span></div>
+            <div class="flex items-center gap-2"><span class="chip">⏱️</span><span id="daylightText">Daylight —</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="glass p-6 lift">
+        <h2 class="font-display text-2xl font-extrabold mb-4">Air &amp; conditions</h2>
+        <ul class="grid grid-cols-2 gap-3 text-sm">
+          <li class="glass-soft p-3"><div class="text-slate-500 dark:text-slate-400">UV index</div><div class="text-xl font-bold" id="uvValue">—</div><div class="text-xs" id="uvNote">—</div></li>
+          <li class="glass-soft p-3"><div class="text-slate-500 dark:text-slate-400">Air pressure</div><div class="text-xl font-bold" id="pressureValue">—</div><div class="text-xs text-slate-500">hPa</div></li>
+          <li class="glass-soft p-3"><div class="text-slate-500 dark:text-slate-400">Humidity</div><div class="text-xl font-bold" id="humidityValue">—</div><div class="text-xs text-slate-500">%</div></li>
+          <li class="glass-soft p-3"><div class="text-slate-500 dark:text-slate-400">Wind</div><div class="text-xl font-bold" id="windValue">—</div><div class="text-xs text-slate-500" id="windDir">—</div></li>
+        </ul>
+      </article>
+    </section>
+
+    <!-- Developer / Personal Branding -->
+    <section aria-labelledby="devHeading" class="mt-10">
+      <h2 id="devHeading" class="font-display text-2xl sm:text-3xl font-extrabold tracking-tight mb-4">Connect with the Developer</h2>
+      <article class="glass doodle-border lift p-6 sm:p-8 relative overflow-hidden">
+        <div class="absolute -right-10 -top-10 opacity-20 pointer-events-none" aria-hidden="true">
+          <svg width="220" height="220" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="doodle-deco">
+            <path d="M30 130c-15 0-25-12-25-25s10-25 25-25c2-15 16-25 32-25 18 0 32 13 32 30 12 1 21 10 21 22 0 13-11 23-25 23H30z" fill="white" fill-opacity=".7"/>
+          </svg>
+        </div>
+        <div class="relative flex flex-col sm:flex-row items-start sm:items-center gap-6">
+          <!-- Avatar (doodle placeholder) -->
+          <div class="shrink-0 w-20 h-20 rounded-2xl bg-gradient-to-br from-sky-400 to-indigo-500 p-[3px] shadow-doodle">
+            <div class="w-full h-full rounded-[14px] bg-white dark:bg-slate-900 flex items-center justify-center overflow-hidden">
+              <svg viewBox="0 0 64 64" class="w-12 h-12" aria-hidden="true">
+                <circle cx="32" cy="24" r="11" fill="#fde68a" stroke="#0f172a" stroke-width="2"/>
+                <path d="M14 56c2-12 10-18 18-18s16 6 18 18" fill="#38bdf8" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+                <circle cx="28" cy="23" r="1.5" fill="#0f172a"/>
+                <circle cx="36" cy="23" r="1.5" fill="#0f172a"/>
+                <path d="M28 28c2 2 6 2 8 0" stroke="#0f172a" stroke-width="2" fill="none" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="flex-1">
+            <h3 class="font-display text-2xl sm:text-3xl font-extrabold">Tuhin Kanti Ghosh</h3>
+            <p class="text-slate-600 dark:text-slate-300 mt-1 max-w-prose">
+              Hi! I built Doodle Weather — a hand-drawn, lightweight weather experience powered by the free Open-Meteo API. Have feedback or a fun idea? I'd love to hear it.
+            </p>
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+              <a
+                href="https://www.linkedin.com/in/tuhin-kanti-ghosh-1062b8394"
+                target="_blank"
+                rel="noopener noreferrer me"
+                class="group inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#0a66c2] hover:bg-[#0958a8] text-white font-semibold shadow-soft transition transform group-hover:-translate-y-0.5"
+                aria-label="Connect with Tuhin Kanti Ghosh on LinkedIn (opens in a new tab)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.22 8h4.56v14H.22V8zM7.78 8h4.37v1.92h.06c.61-1.16 2.1-2.38 4.32-2.38 4.62 0 5.47 3.04 5.47 6.99V22h-4.56v-6.27c0-1.5-.03-3.43-2.09-3.43-2.09 0-2.41 1.63-2.41 3.32V22H7.78V8z"/>
+                </svg>
+                <span>Connect on LinkedIn</span>
+                <svg class="opacity-70 group-hover:opacity-100 transition" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+              </a>
+              <span class="chip">Open to feedback</span>
+              <span class="chip">Made with ♥ in India</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="no-print mt-4">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-8">
+      <div class="glass p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <svg viewBox="0 0 64 64" class="w-10 h-10 doodle" aria-hidden="true">
+              <circle cx="28" cy="28" r="11" fill="#fbbf24" stroke="#0f172a" stroke-width="2.2"/>
+              <g stroke="#0f172a" stroke-width="2.2" stroke-linecap="round" fill="none">
+                <path d="M28 8v6M28 42v6M8 28h6M42 28h6M14 14l4 4M38 38l4 4M14 42l4-4M38 18l4-4"/>
+              </g>
+              <path d="M20 46c-7 0-12-5-12-11s5-11 12-11c1-7 8-12 16-12 9 0 16 7 16 15 6 0 10 5 10 10 0 6-5 10-11 10H20z" fill="#fff" stroke="#0f172a" stroke-width="2.2" stroke-linejoin="round"/>
+            </svg>
+            <div>
+              <div class="font-display text-xl font-extrabold">Doodle Weather</div>
+              <div class="text-sm text-slate-500 dark:text-slate-400">Hand-drawn forecasts for a friendlier sky.</div>
+            </div>
+          </div>
+          <nav aria-label="Footer" class="flex flex-wrap items-center gap-3 text-sm">
+            <a href="#main" class="chip hover:scale-[1.03] transition">Home</a>
+            <a href="https://www.linkedin.com/in/tuhin-kanti-ghosh-1062b8394" target="_blank" rel="noopener noreferrer me" class="chip hover:scale-[1.03] transition">LinkedIn</a>
+            <a href="https://open-meteo.com" target="_blank" rel="noopener noreferrer" class="chip hover:scale-[1.03] transition">Data: Open-Meteo</a>
+          </nav>
+        </div>
+        <hr class="my-5 border-slate-200/70 dark:border-slate-700/60" />
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm text-slate-500 dark:text-slate-400">
+          <p>© <span id="year">2026</span> Tuhin Kanti Ghosh. All rights reserved.</p>
+          <p>Built with <span class="font-semibold">HTML</span>, <span class="font-semibold">Tailwind CSS</span>, and <span class="font-semibold">JavaScript</span>.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast region -->
+  <div id="toast" role="status" aria-live="polite" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 hidden">
+    <div class="glass px-4 py-2 text-sm font-medium" id="toastText">—</div>
+  </div>
+
+  <script>
+    // ============================================================
+    // Doodle Weather — single-file vanilla JS app
+    // Data: Open-Meteo (no API key)
+    // ============================================================
+
+    // -------- Utilities --------
+    const $ = (sel, root = document) => root.querySelector(sel);
+    const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+    const LS_KEYS = { theme: 'dw_theme', history: 'dw_history', lastCity: 'dw_last_city' };
+
+    const fmtTemp = (t) => `${Math.round(t)}°`;
+    const fmtTime = (iso) => {
+      try {
+        return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      } catch { return '—'; }
+    };
+    const fmtHour = (iso) => {
+      try {
+        return new Date(iso).toLocaleTimeString([], { hour: '2-digit' });
+      } catch { return '—'; }
+    };
+    const fmtDay = (iso) => {
+      try {
+        const d = new Date(iso);
+        return d.toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' });
+      } catch { return '—'; }
+    };
+    const compass = (deg) => {
+      if (deg == null) return '—';
+      const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+      return dirs[Math.round(deg / 22.5) % 16];
+    };
+    const uvLabel = (uv) => {
+      if (uv == null) return '—';
+      if (uv < 3) return 'Low';
+      if (uv < 6) return 'Moderate';
+      if (uv < 8) return 'High';
+      if (uv < 11) return 'Very high';
+      return 'Extreme';
+    };
+
+    // -------- WMO weather code mapping --------
+    // https://open-meteo.com/en/docs (WMO Weather interpretation codes)
+    const WMO = {
+      0:  { text: 'Clear sky', icon: 'sun', anim: 'sunny' },
+      1:  { text: 'Mainly clear', icon: 'sun', anim: 'sunny' },
+      2:  { text: 'Partly cloudy', icon: 'partly', anim: 'partly' },
+      3:  { text: 'Overcast', icon: 'cloud', anim: 'cloudy' },
+      45: { text: 'Fog', icon: 'fog', anim: 'fog' },
+      48: { text: 'Depositing rime fog', icon: 'fog', anim: 'fog' },
+      51: { text: 'Light drizzle', icon: 'drizzle', anim: 'rain' },
+      53: { text: 'Moderate drizzle', icon: 'drizzle', anim: 'rain' },
+      55: { text: 'Dense drizzle', icon: 'drizzle', anim: 'rain' },
+      56: { text: 'Light freezing drizzle', icon: 'sleet', anim: 'rain' },
+      57: { text: 'Dense freezing drizzle', icon: 'sleet', anim: 'rain' },
+      61: { text: 'Slight rain', icon: 'rain', anim: 'rain' },
+      63: { text: 'Moderate rain', icon: 'rain', anim: 'rain' },
+      65: { text: 'Heavy rain', icon: 'rain', anim: 'rain' },
+      66: { text: 'Light freezing rain', icon: 'sleet', anim: 'rain' },
+      67: { text: 'Heavy freezing rain', icon: 'sleet', anim: 'rain' },
+      71: { text: 'Slight snow fall', icon: 'snow', anim: 'snow' },
+      73: { text: 'Moderate snow fall', icon: 'snow', anim: 'snow' },
+      75: { text: 'Heavy snow fall', icon: 'snow', anim: 'snow' },
+      77: { text: 'Snow grains', icon: 'snow', anim: 'snow' },
+      80: { text: 'Slight rain showers', icon: 'rain', anim: 'rain' },
+      81: { text: 'Moderate rain showers', icon: 'rain', anim: 'rain' },
+      82: { text: 'Violent rain showers', icon: 'rain', anim: 'rain' },
+      85: { text: 'Slight snow showers', icon: 'snow', anim: 'snow' },
+      86: { text: 'Heavy snow showers', icon: 'snow', anim: 'snow' },
+      95: { text: 'Thunderstorm', icon: 'storm', anim: 'storm' },
+      96: { text: 'Thunderstorm w/ slight hail', icon: 'storm', anim: 'storm' },
+      99: { text: 'Thunderstorm w/ heavy hail', icon: 'storm', anim: 'storm' }
+    };
+    const wmoOf = (code) => WMO[code] || { text: 'Unknown', icon: 'cloud', anim: 'cloudy' };
+
+    // -------- Inline SVG icons (doodle) --------
+    // Each returns string of SVG markup. Designed to be recolored by currentColor.
+    function svgIcon(name, { size = 64, withBg = true } = {}) {
+      const stroke = 'currentColor';
+      const common = `viewBox="0 0 64 64" width="${size}" height="${size}" aria-hidden="true"`;
+      const fillWhite = withBg ? '<circle cx="22" cy="22" r="20" fill="#fff" stroke="' + stroke + '" stroke-width="2.2"/>' : '';
+      const sunCore = `<circle cx="22" cy="22" r="9" fill="#fbbf24" stroke="${stroke}" stroke-width="2.2"/>`;
+      const sunRays = `<g stroke="${stroke}" stroke-width="2.2" stroke-linecap="round" fill="none">
+        <path d="M22 4v6M22 34v6M4 22h6M34 22h6M9 9l4 4M31 31l4 4M9 35l4-4M31 13l4-4"/>
+      </g>`;
+      const cloudShape = `<path d="M14 44c-6 0-10-4-10-9s4-9 10-9c1-6 7-11 14-11 8 0 14 6 14 13 5 0 9 4 9 9 0 5-4 8-9 8H14z" fill="#fff" stroke="${stroke}" stroke-width="2.2" stroke-linejoin="round"/>`;
+
+      switch (name) {
+        case 'sun':
+          return `<svg ${common}>${fillWhite}${sunCore}${sunRays}</svg>`;
+        case 'partly':
+          return `<svg ${common}>${sunRays}${sunCore}<g transform="translate(8,12)">${cloudShape}</g></svg>`;
+        case 'cloud':
+          return `<svg ${common}>${cloudShape}</svg>`;
+        case 'rain':
+          return `<svg ${common}>${cloudShape}<g stroke="#0ea5e9" stroke-width="2.4" stroke-linecap="round">
+            <path d="M20 50l-2 6"/><path d="M28 50l-2 6"/><path d="M36 50l-2 6"/><path d="M44 50l-2 6"/>
+          </g></svg>`;
+        case 'drizzle':
+          return `<svg ${common}>${cloudShape}<g stroke="#0ea5e9" stroke-width="2" stroke-linecap="round">
+            <circle cx="22" cy="52" r="1.6"/><circle cx="30" cy="55" r="1.6"/><circle cx="38" cy="52" r="1.6"/><circle cx="46" cy="55" r="1.6"/>
+          </g></svg>`;
+        case 'snow':
+          return `<svg ${common}>${cloudShape}<g stroke="#0ea5e9" stroke-width="2" stroke-linecap="round" fill="none">
+            <path d="M22 50v6M19 53h6M28 50v6M25 53h6M34 50v6M31 53h6M40 50v6M37 53h6"/>
+          </g></svg>`;
+        case 'sleet':
+          return `<svg ${common}>${cloudShape}<g stroke="#0ea5e9" stroke-width="2" stroke-linecap="round">
+            <path d="M22 50l-2 6"/><path d="M30 50v6M27 53h6"/><path d="M38 50l-2 6"/>
+          </g></svg>`;
+        case 'fog':
+          return `<svg ${common}><g stroke="${stroke}" stroke-width="2.2" stroke-linecap="round" fill="none">
+            <path d="M10 28h44"/><path d="M14 36h36"/><path d="M10 44h44"/><path d="M16 52h32"/>
+          </g></svg>`;
+        case 'storm':
+          return `<svg ${common}>${cloudShape}<path d="M28 44l-4 8h6l-2 8 8-10h-6l2-6z" fill="#fbbf24" stroke="${stroke}" stroke-width="2" stroke-linejoin="round"/></svg>`;
+        default:
+          return `<svg ${common}>${cloudShape}</svg>`;
+      }
+    }
+
+    // -------- Theme handling --------
+    function initTheme() {
+      const saved = localStorage.getItem(LS_KEYS.theme);
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = saved || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      $('#themeToggle').setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+    }
+    function toggleTheme() {
+      const cur = document.documentElement.getAttribute('data-theme');
+      const next = cur === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem(LS_KEYS.theme, next);
+      $('#themeToggle').setAttribute('aria-pressed', next === 'dark' ? 'true' : 'false');
+      // Re-apply scene colors to match theme
+      const cond = window.__lastCondition?.anim || 'sunny';
+      setScene(cond);
+    }
+
+    // -------- Toast --------
+    let toastTimer = null;
+    function toast(msg) {
+      const el = $('#toast'); const txt = $('#toastText');
+      txt.textContent = msg; el.classList.remove('hidden');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.add('hidden'), 3200);
+    }
+
+    // -------- Loading state --------
+    function setLoading(on, text) {
+      const ov = $('#loadingOverlay'), card = $('#currentCard'), lt = $('#loadingText');
+      if (!ov || !card) return;
+      if (text) lt.textContent = text;
+      card.setAttribute('aria-busy', on ? 'true' : 'false');
+      if (on) { ov.classList.remove('hidden'); ov.classList.add('flex'); }
+      else { ov.classList.add('hidden'); ov.classList.remove('flex'); }
+    }
+    function showHourlySkeleton() {
+      const list = $('#hourlyList');
+      if (!list) return;
+      list.innerHTML = Array.from({ length: 8 }, () => '<li class="skel-tile"></li>').join('');
+    }
+    function showDailySkeleton() {
+      const list = $('#dailyList');
+      if (!list) return;
+      list.innerHTML = Array.from({ length: 7 }, () => `
+        <li class="flex items-center gap-3 p-3 sm:p-4">
+          <div class="skeleton h-4 w-24"></div>
+          <div class="skeleton h-8 w-8 rounded-full"></div>
+          <div class="skeleton h-3 w-10"></div>
+          <div class="skeleton h-3 w-10"></div>
+          <div class="skeleton h-2 flex-1 rounded-full"></div>
+          <div class="skeleton h-4 w-10"></div>
+        </li>`).join('');
+    }
+    function showCurrentSkeleton() {
+      const grid = $('#metricsGrid');
+      if (grid) {
+        grid.innerHTML = Array.from({ length: 6 }, () => `
+          <div class="glass-soft p-3">
+            <div class="skeleton h-3 w-16"></div>
+            <div class="skeleton h-6 w-20 mt-2"></div>
+            <div class="skeleton h-3 w-12 mt-2"></div>
+          </div>`).join('');
+      }
+      // Replace the big numbers/text with skeletons for first paint
+      const set = (sel, w) => { const el = $(sel); if (el) el.innerHTML = `<span class="skeleton inline-block h-8 ${w}"></span>`; };
+      set('#cityName', 'w-48');
+      set('#tempValue', 'w-24');
+      set('#conditionText', 'w-32');
+      set('#feelsLike', 'w-28');
+      set('#localTime', 'w-40');
+      const wi = $('#weatherIcon'); if (wi) wi.innerHTML = '';
+    }
+
+    // -------- History (localStorage) --------
+    function getHistory() {
+      try { return JSON.parse(localStorage.getItem(LS_KEYS.history)) || []; }
+      catch { return []; }
+    }
+    function saveHistory(list) {
+      localStorage.setItem(LS_KEYS.history, JSON.stringify(list.slice(0, 6)));
+    }
+    function pushHistory(item) {
+      const list = getHistory().filter(x => x.name.toLowerCase() !== item.name.toLowerCase());
+      list.unshift(item);
+      saveHistory(list);
+      renderHistory();
+    }
+    function renderHistory() {
+      const row = $('#historyRow');
+      const list = getHistory();
+      if (!list.length) { row.classList.add('hidden'); row.innerHTML = ''; return; }
+      row.classList.remove('hidden');
+      row.innerHTML = list.map(it => `
+        <button type="button" class="chip lift shrink-0" data-lat="${it.lat}" data-lon="${it.lon}" data-name="${escapeHtml(it.name)}" data-country="${escapeHtml(it.country || '')}">
+          <span aria-hidden="true">📍</span>
+          <span class="truncate max-w-[200px]">${escapeHtml(it.name)}${it.country ? ', ' + escapeHtml(it.country) : ''}</span>
+        </button>
+      `).join('');
+      $$('#historyRow .chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          fetchWeather(+btn.dataset.lat, +btn.dataset.lon, { name: btn.dataset.name, country: btn.dataset.country });
+        });
+      });
+    }
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    // -------- Geocoding (Open-Meteo) --------
+    async function geocode(query) {
+      const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=6&language=en&format=json`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Geocoding failed');
+      const data = await res.json();
+      return data.results || [];
+    }
+
+    // -------- Weather fetch --------
+    let inflightController = null;
+    async function fetchWeather(lat, lon, place) {
+      // Cancel any in-flight request so we don't render stale data
+      if (inflightController) inflightController.abort();
+      const controller = new AbortController();
+      inflightController = controller;
+
+      setLoading(true, `Loading weather for ${place?.name || 'your location'}\u2026`);
+      showHourlySkeleton();
+      showDailySkeleton();
+
+      try {
+        hideError();
+        const params = new URLSearchParams({
+          latitude: lat,
+          longitude: lon,
+          current: 'temperature_2m,apparent_temperature,relative_humidity_2m,is_day,weather_code,wind_speed_10m,wind_direction_10m,surface_pressure',
+          hourly: 'temperature_2m,weather_code,precipitation_probability,is_day',
+          daily: 'weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_probability_max,wind_speed_10m_max,wind_direction_10m_dominant',
+          timezone: 'auto',
+          forecast_days: '7',
+          wind_speed_unit: 'kmh',
+          temperature_unit: 'celsius'
+        });
+        const url = `https://api.open-meteo.com/v1/forecast?${params.toString()}`;
+        const res = await fetch(url, { signal: controller.signal });
+        if (!res.ok) throw new Error('Forecast request failed');
+        const data = await res.json();
+
+        const displayName = place?.name || `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+        const country = place?.country || '';
+        const region = place?.admin1 || '';
+        renderAll(data, { name: displayName, country, region, lat, lon });
+
+        // Update page metadata
+        const title = `Weather in ${displayName} — Doodle Weather`;
+        document.title = title.length > 60 ? `Weather in ${displayName} | Doodle` : title;
+        updateMeta(`
+          Live weather forecast for ${displayName}${country ? ', ' + country : ''}: temperature, feels-like, humidity, wind, UV index, sunrise & sunset, plus 7-day outlook.
+        `.trim(), `${displayName}${country ? ', ' + country : ''}`);
+
+        // Persist as last & history
+        localStorage.setItem(LS_KEYS.lastCity, JSON.stringify({ lat, lon, name: displayName, country, region }));
+        if (place?.name) pushHistory({ name: displayName, country, lat, lon });
+      } catch (err) {
+        if (err.name === 'AbortError') return; // superseded by a newer request
+        console.error(err);
+        showError('Could not load weather. Please try another city or check your connection.');
+        toast('Network error — please try again.');
+      } finally {
+        if (inflightController === controller) {
+          inflightController = null;
+          setLoading(false);
+        }
+      }
+    }
+
+    function updateMeta(desc, loc) {
+      const m = $('meta[name="description"]');
+      if (m) m.setAttribute('content', desc.slice(0, 160));
+      const og = $('meta[property="og:title"]'); if (og) og.setAttribute('content', `Weather in ${loc} — Doodle Weather`);
+      const ogd = $('meta[property="og:description"]'); if (ogd) ogd.setAttribute('content', desc.slice(0, 200));
+      const tw = $('meta[name="twitter:title"]'); if (tw) tw.setAttribute('content', `Weather in ${loc} — Doodle Weather`);
+      const twd = $('meta[name="twitter:description"]'); if (twd) twd.setAttribute('content', desc.slice(0, 200));
+    }
+
+    // -------- Rendering --------
+    function renderAll(data, place) {
+      const c = data.current, h = data.hourly, d = data.daily;
+
+      // Hero text
+      $('#cityName').textContent = place.name;
+      const lt = new Date(c.time);
+      $('#localTime').textContent = `Local time ${lt.toLocaleString([], { weekday:'long', hour:'2-digit', minute:'2-digit' })} • ${place.region ? place.region + ' · ' : ''}${place.country || ''}`;
+      $('#tempValue').textContent = fmtTemp(c.temperature_2m);
+      const w = wmoOf(c.weather_code);
+      $('#conditionText').textContent = w.text;
+      $('#feelsLike').textContent = `Feels like ${fmtTemp(c.apparent_temperature)}`;
+      $('#weatherIcon').innerHTML = svgIcon(w.icon, { size: 128, withBg: true });
+      $('#weatherIcon').style.color = 'var(--doodle)';
+      $('#greeting').textContent = greeting();
+      window.__lastCondition = w;
+
+      // Location + updated chips
+      $('#locationText').textContent = `${place.name}${place.country ? ', ' + place.country : ''}`;
+      $('#updatedText').textContent = `Updated ${new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })}`;
+
+      // Metrics grid (top hero right column)
+      const metrics = [
+        { label: 'Feels like', value: fmtTemp(c.apparent_temperature), sub: w.text },
+        { label: 'Humidity', value: `${c.relative_humidity_2m}%`, sub: 'Relative' },
+        { label: 'Wind', value: `${Math.round(c.wind_speed_10m)} km/h`, sub: compass(c.wind_direction_10m) },
+        { label: 'UV index', value: uvToday(d), sub: uvLabel(uvToday(d)) },
+        { label: 'Pressure', value: `${Math.round(c.surface_pressure)}`, sub: 'hPa' },
+        { label: 'Precipitation', value: `${maxPrecip(h)}%`, sub: 'next 24h' }
+      ];
+      $('#metricsGrid').innerHTML = metrics.map(m => `
+        <div class="glass-soft p-3 lift">
+          <div class="text-xs text-slate-500 dark:text-slate-400">${m.label}</div>
+          <div class="text-xl font-extrabold tracking-tight">${m.value}</div>
+          <div class="text-[11px] text-slate-500 dark:text-slate-400">${m.sub}</div>
+        </div>
+      `).join('');
+
+      // Hourly: next 24 hours from the API's reported "now"
+      const nowMs = new Date(c.time).getTime();
+      let startIdx = h.time.findIndex(t => new Date(t).getTime() >= nowMs);
+      if (startIdx < 0) startIdx = 0;
+      // Always show 24 entries; if the day has fewer, pad with what's left
+      const endIdx = Math.min(h.time.length, startIdx + 24);
+      const slice = [];
+      for (let i = startIdx; i < endIdx; i++) {
+        slice.push({
+          time: h.time[i],
+          temp: h.temperature_2m[i],
+          code: h.weather_code[i],
+          pop: h.precipitation_probability?.[i] ?? null,
+          isDay: h.is_day?.[i] ?? 1
+        });
+      }
+      if (slice.length) {
+        $('#hourlyRange').textContent = `${fmtHour(slice[0].time)} – ${fmtHour(slice[slice.length-1].time)}`;
+      } else {
+        $('#hourlyRange').textContent = 'No hourly data';
+      }
+      $('#hourlyList').innerHTML = slice.map((s, i) => {
+        const w2 = wmoOf(s.code);
+        const isNow = i === 0;
+        return `
+          <li class="min-w-[88px] glass-soft p-3 text-center lift ${isNow ? 'ring-2 ring-sky-400 bg-sky-50/60 dark:bg-sky-900/20' : ''}">
+            <div class="text-[11px] font-semibold ${isNow ? 'text-sky-600 dark:text-sky-300' : 'text-slate-500 dark:text-slate-400'}">${isNow ? 'Now' : fmtHour(s.time)}</div>
+            <div class="my-1 flex justify-center" style="color: var(--doodle);">${svgIcon(w2.icon, { size: 36, withBg: false })}</div>
+            <div class="text-base font-bold">${fmtTemp(s.temp)}</div>
+            ${s.pop != null ? `<div class="text-[11px] text-sky-500">💧 ${s.pop}%</div>` : ''}
+          </li>
+        `;
+      }).join('') || '<li class="text-sm text-slate-500">No data</li>';
+
+      // Daily: 7 days
+      $('#dailyRange').textContent = `${fmtDay(d.time[0])} → ${fmtDay(d.time[d.time.length-1])}`;
+      // Compute global min/max across the week so each day's bar is proportional
+      const globalMin = Math.min(...d.temperature_2m_min);
+      const globalMax = Math.max(...d.temperature_2m_max);
+      $('#dailyList').innerHTML = d.time.map((t, i) => {
+        const wd = wmoOf(d.weather_code[i]);
+        const min = d.temperature_2m_min[i], max = d.temperature_2m_max[i];
+        const range = tempRange(globalMin, globalMax, min, max);
+        return `
+          <li class="flex items-center gap-3 p-3 sm:p-4">
+            <div class="w-24 sm:w-32 text-sm font-semibold">${i===0?'Today':fmtDay(t)}</div>
+            <div class="flex items-center gap-2" style="color: var(--doodle);">${svgIcon(wd.icon, { size: 36, withBg: false })}</div>
+            <div class="text-xs text-sky-500 w-12 text-right">${d.precipitation_probability_max?.[i] ?? 0}%</div>
+            <div class="text-sm text-slate-500 dark:text-slate-400 w-12 text-right">${fmtTemp(min)}</div>
+            <div class="flex-1 h-2 rounded-full bg-slate-200/70 dark:bg-slate-700/60 overflow-hidden">
+              <div class="h-full rounded-full bg-gradient-to-r from-sky-400 via-amber-400 to-rose-400" style="width:${range.width}%; margin-left:${range.offset}%;"></div>
+            </div>
+            <div class="text-sm font-bold w-12 text-right">${fmtTemp(max)}</div>
+          </li>
+        `;
+      }).join('');
+
+      // Sun & moon — use today's sunrise/sunset (index 0)
+      const sr = new Date(d.sunrise[0]), ss = new Date(d.sunset[0]);
+      $('#sunriseText').textContent = `Sunrise ${fmtTime(d.sunrise[0])}`;
+      $('#sunsetText').textContent = `Sunset ${fmtTime(d.sunset[0])}`;
+      $('#sunriseLabel').textContent = fmtTime(d.sunrise[0]);
+      $('#sunsetLabel').textContent = fmtTime(d.sunset[0]);
+      const dayMs = ss - sr;
+      const hrs = Math.floor(dayMs / 3.6e6);
+      const mins = Math.round((dayMs % 3.6e6) / 6e4);
+      $('#daylightText').textContent = `Daylight ${hrs}h ${mins}m`;
+      // Sun arc position — clamp to [0,1] so before-sunrise sits at the start
+      // and after-sunset sits at the end (visually correct).
+      const localNowMs = Date.now();
+      const dayProgress = Math.max(0, Math.min(1, (localNowMs - sr.getTime()) / (ss.getTime() - sr.getTime())));
+      const angle = Math.PI * (1 - dayProgress);
+      const cx = 50 - 44 * Math.cos(angle);
+      const cy = 50 - 44 * Math.sin(angle);
+      const dot = $('#sunDot');
+      if (dot) { dot.setAttribute('cx', cx.toFixed(1)); dot.setAttribute('cy', cy.toFixed(1)); }
+
+      // Air & conditions
+      $('#uvValue').textContent = uvToday(d);
+      $('#uvNote').textContent = uvLabel(uvToday(d));
+      $('#pressureValue').textContent = Math.round(c.surface_pressure);
+      $('#humidityValue').textContent = c.relative_humidity_2m;
+      $('#windValue').textContent = `${Math.round(c.wind_speed_10m)} km/h`;
+      $('#windDir').textContent = `${compass(c.wind_direction_10m)} • ${Math.round(c.wind_direction_10m)}°`;
+
+      // Scene animation
+      setScene(w.anim, { isDay: !!c.is_day, code: c.weather_code });
+    }
+
+    function greeting() {
+      const h = new Date().getHours();
+      if (h < 5) return 'Hello, night owl!';
+      if (h < 12) return 'Good morning!';
+      if (h < 17) return 'Good afternoon!';
+      if (h < 21) return 'Good evening!';
+      return 'Hello, stargazer!';
+    }
+    function uvToday(d) {
+      return Math.round(d.uv_index_max?.[0] ?? 0);
+    }
+    function maxPrecip(h) {
+      const start = h.time.findIndex(t => new Date(t) >= new Date());
+      const end = Math.min(h.time.length, start + 24);
+      let max = 0;
+      for (let i = Math.max(0, start); i < end; i++) {
+        const v = h.precipitation_probability?.[i] ?? 0;
+        if (v > max) max = v;
+      }
+      return max;
+    }
+    // Build a normalized 0-100% width+offset for the daily min/max bar
+    // so each day's segment sits proportionally within the global week range.
+    function tempRange(globalMin, globalMax, dayMin, dayMax) {
+      const total = (globalMax - globalMin) || 1;
+      const widthPct = ((dayMax - dayMin) / total) * 100;
+      const offsetPct = ((dayMin - globalMin) / total) * 100;
+      return {
+        width: Math.max(8, widthPct),
+        offset: Math.max(0, Math.min(100 - Math.max(8, widthPct), offsetPct))
+      };
+    }
+
+    // -------- Scene animation (background) --------
+    function setScene(anim, opts = {}) {
+      const rain = $('#rainLayer'), snow = $('#snowLayer'), sun = $('#sunLayer'), cloud = $('#cloudLayer');
+      rain.classList.add('hidden'); snow.classList.add('hidden'); sun.classList.add('hidden');
+      cloud.innerHTML = '';
+      if (anim === 'rain' || anim === 'storm' || anim === 'drizzle' || anim === 'sleet') {
+        rain.classList.remove('hidden');
+        rain.innerHTML = '';
+        const drops = anim === 'storm' ? 90 : anim === 'rain' ? 70 : 40;
+        for (let i = 0; i < drops; i++) {
+          const d = document.createElement('span');
+          d.className = 'drop';
+          d.style.left = `${Math.random() * 100}%`;
+          d.style.animationDelay = `${-Math.random() * 1.1}s`;
+          d.style.animationDuration = `${0.7 + Math.random() * 0.6}s`;
+          d.style.opacity = (0.5 + Math.random() * 0.5).toFixed(2);
+          rain.appendChild(d);
+        }
+      }
+      if (anim === 'snow') {
+        snow.classList.remove('hidden');
+        snow.innerHTML = '';
+        const flakes = 50;
+        for (let i = 0; i < flakes; i++) {
+          const f = document.createElement('span');
+          f.className = 'flake';
+          f.textContent = ['❄','✻','•','❅'][Math.floor(Math.random()*4)];
+          f.style.left = `${Math.random() * 100}%`;
+          f.style.animationDuration = `${4 + Math.random() * 5}s`;
+          f.style.animationDelay = `${-Math.random() * 6}s`;
+          f.style.fontSize = `${10 + Math.random() * 12}px`;
+          snow.appendChild(f);
+        }
+      }
+      if (anim === 'sunny' || anim === 'partly') {
+        sun.classList.remove('hidden');
+      }
+      // Always add a couple of decorative clouds
+      const count = (anim === 'cloudy' || anim === 'fog') ? 4 : 2;
+      for (let i = 0; i < count; i++) {
+        const c = document.createElement('div');
+        c.className = 'absolute';
+        c.style.top = `${5 + Math.random() * 50}%`;
+        c.style.left = `${-10 + Math.random() * 80}%`;
+        c.style.opacity = (0.4 + Math.random() * 0.4).toFixed(2);
+        c.style.color = 'var(--doodle)';
+        c.innerHTML = `<svg width="${80 + Math.random()*60}" height="${40 + Math.random()*30}" viewBox="0 0 200 100" class="animate-float-slow" style="animation-delay:${-Math.random()*5}s;">
+          <path d="M30 70c-12 0-22-9-22-20s10-20 22-20c2-12 14-22 28-22 16 0 28 12 28 26 10 1 18 9 18 19 0 11-9 19-20 19H30z" fill="white" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" fill-opacity=".8"/>
+        </svg>`;
+        cloud.appendChild(c);
+      }
+    }
+
+    // -------- Search + suggestions --------
+    let searchTimer = null;
+    let activeSuggestionIdx = -1;
+    function setupSearch() {
+      const input = $('#cityInput');
+      const clearBtn = $('#clearInput');
+      const form = $('#searchForm');
+      const sug = $('#suggestions');
+
+      const closeSuggestions = () => { sug.classList.add('hidden'); activeSuggestionIdx = -1; };
+      const openSuggestions = () => { if (sug.children.length) sug.classList.remove('hidden'); };
+      const setActiveSuggestion = (idx) => {
+        const items = $$('#suggestions li');
+        if (!items.length) return;
+        activeSuggestionIdx = (idx + items.length) % items.length;
+        items.forEach((li, i) => li.classList.toggle('bg-sky-100/70', i === activeSuggestionIdx));
+        items[activeSuggestionIdx].scrollIntoView({ block: 'nearest' });
+      };
+
+      input.addEventListener('input', () => {
+        clearBtn.classList.toggle('hidden', !input.value);
+        clearTimeout(searchTimer);
+        const q = input.value.trim();
+        if (q.length < 2) { closeSuggestions(); sug.innerHTML=''; return; }
+        searchTimer = setTimeout(async () => {
+          try {
+            const results = await geocode(q);
+            if (!results.length) {
+              sug.innerHTML = `<li class="px-4 py-3 text-sm text-slate-500">No matches for "${escapeHtml(q)}"</li>`;
+              openSuggestions();
+              return;
+            }
+            sug.innerHTML = results.map((r, i) => `
+              <li role="option" aria-selected="false" data-lat="${r.latitude}" data-lon="${r.longitude}" data-name="${escapeHtml(r.name)}" data-country="${escapeHtml(r.country || '')}" data-admin="${escapeHtml(r.admin1 || '')}" tabindex="-1" class="px-4 py-2 cursor-pointer hover:bg-sky-100/70 dark:hover:bg-slate-700/60 flex items-center justify-between">
+                <span>${escapeHtml(r.name)}${r.admin1 ? ', ' + escapeHtml(r.admin1) : ''}${r.country ? ', ' + escapeHtml(r.country) : ''}</span>
+                <span class="text-xs text-slate-500 shrink-0 ml-3">${r.latitude.toFixed(2)}, ${r.longitude.toFixed(2)}</span>
+              </li>
+            `).join('');
+            activeSuggestionIdx = -1;
+            openSuggestions();
+            $$('#suggestions li').forEach(li => {
+              // Use mousedown so we beat the outside-click handler
+              li.addEventListener('mousedown', (e) => { e.preventDefault(); pickResult(li); });
+              li.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); pickResult(li); } });
+            });
+          } catch (e) { /* ignore network blips on typeahead */ }
+        }, 250);
+      });
+
+      // Keyboard: arrows to move, Enter to select, Esc to close
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown') { e.preventDefault(); if (!sug.classList.contains('hidden')) setActiveSuggestion(activeSuggestionIdx + 1); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); if (!sug.classList.contains('hidden')) setActiveSuggestion(activeSuggestionIdx - 1); }
+        else if (e.key === 'Escape') { closeSuggestions(); }
+        else if (e.key === 'Enter') {
+          // If a suggestion is highlighted, pick it
+          if (!sug.classList.contains('hidden') && activeSuggestionIdx >= 0) {
+            e.preventDefault();
+            const li = $$('#suggestions li')[activeSuggestionIdx];
+            if (li) { pickResult(li); return; }
+          }
+        }
+      });
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const q = input.value.trim();
+        if (!q) return;
+        try {
+          const results = await geocode(q);
+          if (!results.length) { showError('No matching city found. Try another name.'); return; }
+          const top = results[0];
+          hideError();
+          closeSuggestions();
+          fetchWeather(top.latitude, top.longitude, { name: top.name, country: top.country, admin1: top.admin1 });
+          input.value = ''; clearBtn.classList.add('hidden');
+        } catch {
+          showError('Search is not available right now.');
+        }
+      });
+
+      clearBtn.addEventListener('click', () => { input.value=''; clearBtn.classList.add('hidden'); closeSuggestions(); input.focus(); });
+
+      // Close on outside click — but not on the suggestions themselves
+      document.addEventListener('mousedown', (e) => {
+        if (!form.contains(e.target) && !sug.contains(e.target)) closeSuggestions();
+      });
+    }
+    function pickResult(li) {
+      const lat = +li.dataset.lat, lon = +li.dataset.lon;
+      const place = { name: li.dataset.name, country: li.dataset.country, admin1: li.dataset.admin };
+      hideError();
+      $('#suggestions').classList.add('hidden');
+      activeSuggestionIdx = -1;
+      $('#cityInput').value = '';
+      $('#clearInput').classList.add('hidden');
+      fetchWeather(lat, lon, place);
+    }
+
+    // -------- Geolocation --------
+    function locateMe() {
+      if (!('geolocation' in navigator)) {
+        showError('Geolocation is not supported in this browser. Try searching instead.');
+        return fallbackCity();
+      }
+      $('#locationText').textContent = 'Locating…';
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const { latitude, longitude } = pos.coords;
+          let place = { name: 'Your location', country: '' };
+          try {
+            // Reverse-geocode via Open-Meteo (best effort, not always populated)
+            const url = `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${latitude}&longitude=${longitude}&language=en&format=json`;
+            const r = await fetch(url);
+            if (r.ok) {
+              const j = await r.json();
+              if (j.results && j.results[0]) {
+                place = { name: j.results[0].name, country: j.results[0].country || '', admin1: j.results[0].admin1 || '' };
+              }
+            }
+          } catch { /* fall back to coords */ }
+          fetchWeather(latitude, longitude, place);
+        },
+        async (err) => {
+          console.warn('Geolocation failed:', err && err.message);
+          showError('Location denied or unavailable — loading a default city instead.');
+          await fallbackCity();
+        },
+        { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 }
+      );
+    }
+    async function fallbackCity() {
+      try {
+        const rs = await geocode('Kolkata');
+        if (rs && rs[0]) {
+          fetchWeather(rs[0].latitude, rs[0].longitude, { name: rs[0].name, country: rs[0].country, admin1: rs[0].admin1 });
+        } else {
+          showError('Could not load a default city. Please search above.');
+          setLoading(false);
+        }
+      } catch {
+        showError('Network unavailable. Please search for a city above.');
+        setLoading(false);
+      }
+    }
+
+    // -------- Error UI --------
+    function showError(msg) {
+      const chip = $('#errorChip'), text = $('#errorText');
+      text.textContent = msg; chip.classList.remove('hidden');
+    }
+    function hideError() { $('#errorChip').classList.add('hidden'); }
+
+    // -------- Init --------
+    function init() {
+      initTheme();
+      $('#year').textContent = new Date().getFullYear();
+      $('#themeToggle').addEventListener('click', toggleTheme);
+      $('#locateBtn').addEventListener('click', locateMe);
+      setupSearch();
+      renderHistory();
+      // Pre-paint skeletons so the page never looks empty
+      showCurrentSkeleton();
+      showHourlySkeleton();
+      showDailySkeleton();
+
+      // Try last city, then geolocate
+      const last = (() => { try { return JSON.parse(localStorage.getItem(LS_KEYS.lastCity)); } catch { return null; } })();
+      if (last && last.lat && last.lon) {
+        fetchWeather(last.lat, last.lon, { name: last.name, country: last.country, admin1: last.region });
+      } else {
+        locateMe();
+      }
+    }
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
